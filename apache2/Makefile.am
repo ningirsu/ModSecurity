@@ -16,6 +16,7 @@ mod_security2_la_SOURCES = acmp.c \
     msc_gsb.c \
     msc_json.c \
     msc_logging.c \
+    idmef_logging.c \
     msc_lua.c \
     msc_multipart.c \
     msc_parsers.c \

@@ -35,6 +35,7 @@ typedef struct msc_parm msc_parm;
 
 #include "msc_release.h"
 #include "msc_logging.h"
+#include "idmef_logging.h"
 #include "msc_multipart.h"
 #include "msc_pcre.h"
 #include "msc_util.h"
@@ -629,6 +630,10 @@ struct directory_config {
 
     /* xml */
     int                 xml_external_entity;
+
+    /* Idmef Logging */
+    int                 prelude_is_enabled;
+    const char          *analyzer_name;
 
     /* This will be used whenever ModSecurity will be ready
      * to ask the server for newer rules.

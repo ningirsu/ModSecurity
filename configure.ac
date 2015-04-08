@@ -537,6 +537,24 @@ AC_ARG_ENABLE(modsec-api,
   modsec_api=
 ])
 
+# PRELUDE
+AC_ARG_ENABLE(prelude,
+              AS_HELP_STRING([--enable-prelude],
+                             [Enable Prelude support for alerts.]),
+[
+  if test "$enableval" != "no"; then
+    AM_PATH_LIBPRELUDE(0.9.9, , AC_MSG_ERROR(Cannot find libprelude: Is libprelude-config in the path?), no)
+    prelude="-DPRELUDE $LIBPRELUDE_LIBS"
+    AC_DEFINE([PRELUDE], [1], [Libprelude support enabled])
+    MODSEC_EXTRA_CFLAGS="$MODSEC_EXTRA_CFLAGS $prelude"
+  else
+    prelude=
+  fi
+],
+[
+  prelude=
+])
+
 # Find apxs
 AC_MSG_NOTICE(looking for Apache module support via DSO through APXS)
 AC_ARG_WITH(apxs,
@@ -659,7 +677,7 @@ else
   fi
 fi
 
-MODSEC_EXTRA_CFLAGS="$pcre_study $pcre_match_limit $pcre_match_limit_recursion $pcre_jit $request_early $htaccess_config $lua_cache $debug_conf $debug_cache $debug_acmp $debug_mem $perf_meas $modsec_api $cpu_type"
+MODSEC_EXTRA_CFLAGS="$pcre_study $pcre_match_limit $pcre_match_limit_recursion $pcre_jit $request_early $htaccess_config $lua_cache $debug_conf $debug_cache $debug_acmp $debug_mem $perf_meas $modsec_api $cpu_type $prelude"
 
 APXS_WRAPPER=build/apxs-wrapper
 APXS_EXTRA_CFLAGS=""

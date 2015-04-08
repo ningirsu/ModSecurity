@@ -17,6 +17,7 @@ standalone_la_SOURCES = ../apache2/acmp.c \
     ../apache2/msc_gsb.c \
     ../apache2/msc_json.c \
     ../apache2/msc_logging.c \
+    ../apache2/idmef_logging.c \
     ../apache2/msc_lua.c \
     ../apache2/msc_multipart.c \
     ../apache2/msc_parsers.c \

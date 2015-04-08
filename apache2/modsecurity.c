@@ -62,6 +62,11 @@ void msc_alert(modsec_rec *msr, int level, msre_actionset *actionset, const char
     const char *message = msc_alert_message(msr, actionset, action_message, rule_message);
 
     msr_log(msr, level, "%s", message);
+
+    if ( msr->txcfg->prelude_is_enabled == 1 &&
+            level != 4) {
+        idmef_log(msr, actionset, action_message, rule_message);
+    }
 }
 
 #if 0
@@ -713,7 +718,7 @@ static apr_status_t modsecurity_process_phase_logging(modsec_rec *msr) {
     }
 
     sec_audit_logger(msr);
-    
+
     msr->time_logging = apr_time_now() - time_after;    
 
     return 0;

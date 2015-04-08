@@ -17,6 +17,7 @@ CORE_LIBS="$CORE_LIBS \
     @APU_LINKLD@ \
     @APXS_CFLAGS@ \
     @CURL_LDADD@ \
+    @LIBPRELUDE_LIBS@ \
     @LIBXML2_LDADD@ \
     @LUA_LDADD@ \
     @PCRE_LDADD@ \

@@ -159,6 +159,10 @@ void *create_directory_config(apr_pool_t *mp, char *path)
     /* xml external entity */
     dcfg->xml_external_entity = NOT_SET;
 
+    /* Prelude */
+    dcfg->analyzer_name = NOT_SET_P;
+    dcfg->prelude_is_enabled = NOT_SET;
+
     return dcfg;
 }
 
@@ -619,6 +623,10 @@ void *merge_directory_configs(apr_pool_t *mp, void *_parent, void *_child)
     merged->xml_external_entity = (child->xml_external_entity == NOT_SET
         ? parent->xml_external_entity : child->xml_external_entity);
 
+    /* Prelude */
+    merged->analyzer_name = (child->analyzer_name == NOT_SET_P ? parent->analyzer_name : child->analyzer_name);
+    merged->prelude_is_enabled = (child->prelude_is_enabled == NOT_SET ? parent->prelude_is_enabled : child->prelude_is_enabled);
+
     return merged;
 }
 
@@ -741,6 +749,10 @@ void init_directory_config(directory_config *dcfg)
 
     /* xml external entity */
     if (dcfg->xml_external_entity == NOT_SET) dcfg->xml_external_entity = 0;
+
+    /* Prelude */
+    if (dcfg->analyzer_name == NOT_SET_P) dcfg->analyzer_name = "Modsecurity";
+    if (dcfg->prelude_is_enabled == NOT_SET) dcfg->prelude_is_enabled = 0;
 
 }
 
@@ -3025,6 +3037,56 @@ static const char *cmd_gsb_lookup_db(cmd_parms *cmd, void *_dcfg,
     return NULL;
 }
 
+/**
+* \brief Add SecAnalyzerName configuration option
+*
+* \param cmd Pointer to configuration data
+* \param _dcfg Pointer to directory configuration
+* \param p1 Pointer to configuration option
+*
+* \retval NULL On success
+*/
+
+static const char *cmd_idmef_set_analyzer_name(cmd_parms *cmd, void *_dcfg, const char *p1)
+{
+    directory_config *dcfg = (directory_config *)_dcfg;
+
+    if (dcfg == NULL) return NULL;
+
+    if (p1 == NULL) return NULL;
+    dcfg->analyzer_name = (char *)p1;
+
+    return NULL;
+}
+
+/**
+* \brief Add SecPrelude configuration option
+*
+* \param cmd Pointer to configuration data
+* \param _dcfg Pointer to directory configuration
+* \param p1 Pointer to configuration option
+*
+* \retval NULL On success
+*/
+
+static const char *cmd_prelude_engine(cmd_parms *cmd, void *_dcfg, const char *p1)
+{
+    directory_config *dcfg = (directory_config *)_dcfg;
+    int ret;
+
+    if (dcfg == NULL) return NULL;
+
+    if (strcasecmp(p1, "on") == 0)  {
+        dcfg->prelude_is_enabled = 1;
+    }
+    else if (strcasecmp(p1, "off") == 0)    {
+        dcfg->prelude_is_enabled = 0;
+    }
+    else return apr_psprintf(cmd->pool, "ModSecurity: Invalid value for PreludeEngine: %s", p1);
+
+    return NULL;
+}
+
 /* -- Cache -- */
 
 static const char *cmd_cache_transformations(cmd_parms *cmd, void *_dcfg,
@@ -3869,6 +3931,22 @@ const command_rec module_directives[] = {
         NULL,
         CMD_SCOPE_ANY,
         "Set Hash parameter"
+    ),
+
+    AP_INIT_TAKE1 (
+        "SecPreludeAnalyzerName",
+        cmd_idmef_set_analyzer_name,
+        NULL,
+        CMD_SCOPE_ANY,
+        "Set Prelude analyzer name"
+    ),
+
+    AP_INIT_TAKE1 (
+        "SecPrelude",
+        cmd_prelude_engine,
+        NULL,
+        CMD_SCOPE_ANY,
+        "On or Off"
     ),
 
     { NULL }
